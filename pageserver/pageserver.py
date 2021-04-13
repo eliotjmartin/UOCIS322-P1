@@ -101,6 +101,10 @@ def respond(sock):
         elif parts[1] == '/trivia.css':
             transmit(STATUS_OK, sock)
             transmit(../pages/trivia.css, sock)"""
+        elif parts[1][0:2] == '//' or parts[1][1:3] == '..' or parts[1][1] == '~':
+            log.info("403 Forbidden: {}".format(request))
+            transmit(STATUS_FORBIDDEN, sock)
+            transmit("403 Forbidden\n", sock)
         else:
             log.info("Not Found: {}".format(request))
             transmit(STATUS_NOT_FOUND, sock)
