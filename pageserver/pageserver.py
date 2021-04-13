@@ -90,6 +90,7 @@ def respond(sock):
     log.info("Request was {}\n***\n".format(request))
 
     parts = request.split()
+    print('pages'.strip()+parts[1].strip())
     if len(parts) > 1 and parts[0] == "GET":
         if parts[1] == '/':
             transmit(STATUS_OK, sock)
@@ -97,18 +98,25 @@ def respond(sock):
             """
         elif parts[1] == '/trivia.html':
             transmit(STATUS_OK, sock)
-            transmit(../pages/trivia.html, sock)
+            html = open("pages/trivia.html", "r")
+            transmit(html.read(), sock)
+            
         elif parts[1] == '/trivia.css':
             transmit(STATUS_OK, sock)
             transmit(../pages/trivia.css, sock)"""
         elif parts[1][0:2] == '//' or parts[1][1:3] == '..' or parts[1][1] == '~':
             log.info("403 Forbidden: {}".format(request))
             transmit(STATUS_FORBIDDEN, sock)
-            transmit("403 Forbidden\n", sock)
+            transmit("<h1>403 Forbidden</h1>\n", sock)
         else:
-            log.info("Not Found: {}".format(request))
-            transmit(STATUS_NOT_FOUND, sock)
-            transmit("404 Not Found\n", sock)
+            try:
+                with open(str('pages'.strip() + parts[1].strip()), "r") as html:
+                    transmit(STATUS_OK, sock)
+                    transmit(html.read(), sock)
+            except IOError:
+                log.info("Not Found: {}".format(request))
+                transmit(STATUS_NOT_FOUND, sock)
+                transmit("<h1>404 Not Found</h1>\n", sock)
     else:
         log.info("Unhandled request: {}".format(request))
         transmit(STATUS_NOT_IMPLEMENTED, sock)
