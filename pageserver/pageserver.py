@@ -91,8 +91,20 @@ def respond(sock):
 
     parts = request.split()
     if len(parts) > 1 and parts[0] == "GET":
-        transmit(STATUS_OK, sock)
-        transmit(CAT, sock)
+        if parts[1] == '/':
+            transmit(STATUS_OK, sock)
+            transmit(CAT, sock)
+            """
+        elif parts[1] == '/trivia.html':
+            transmit(STATUS_OK, sock)
+            transmit(../pages/trivia.html, sock)
+        elif parts[1] == '/trivia.css':
+            transmit(STATUS_OK, sock)
+            transmit(../pages/trivia.css, sock)"""
+        else:
+            log.info("Not Found: {}".format(request))
+            transmit(STATUS_NOT_FOUND, sock)
+            transmit("404 Not Found\n", sock)
     else:
         log.info("Unhandled request: {}".format(request))
         transmit(STATUS_NOT_IMPLEMENTED, sock)
