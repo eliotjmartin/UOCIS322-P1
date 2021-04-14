@@ -90,21 +90,11 @@ def respond(sock):
     log.info("Request was {}\n***\n".format(request))
 
     parts = request.split()
-    print('pages'.strip()+parts[1].strip())
     if len(parts) > 1 and parts[0] == "GET":
         if parts[1] == '/':
             transmit(STATUS_OK, sock)
             transmit(CAT, sock)
-            """
-        elif parts[1] == '/trivia.html':
-            transmit(STATUS_OK, sock)
-            html = open("pages/trivia.html", "r")
-            transmit(html.read(), sock)
-            
-        elif parts[1] == '/trivia.css':
-            transmit(STATUS_OK, sock)
-            transmit(../pages/trivia.css, sock)"""
-        elif parts[1][0:2] == '//' or parts[1][1:3] == '..' or parts[1][1] == '~':
+        elif '//' in parts[1] or '..' in parts[1] or '~' in parts[1]:
             log.info("403 Forbidden: {}".format(request))
             transmit(STATUS_FORBIDDEN, sock)
             transmit("<h1>403 Forbidden</h1>\n", sock)
