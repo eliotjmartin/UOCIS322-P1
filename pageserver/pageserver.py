@@ -100,7 +100,7 @@ def respond(sock):
             transmit("<h1>403 Forbidden</h1>\n", sock)
         else:
             try:
-                with open(str('pages'.strip() + parts[1].strip()), "r") as html:
+                with open(str(get_options().DOCROOT.strip() + parts[1].strip()), "r") as html:
                     transmit(STATUS_OK, sock)
                     transmit(html.read(), sock)
             except IOError:
