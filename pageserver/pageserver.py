@@ -5,12 +5,6 @@
   This trivial implementation is not robust:  We have omitted decent
   error handling and many other things to keep the illustration as simple
   as possible.
-
-  FIXME:
-  Currently this program always serves an ascii graphic of a cat.
-  Change it to serve files if they end with .html or .css, and are
-  located in ./pages  (where '.' is the directory from which this
-  program is run).
 """
 
 import config    # Configure from .ini files and command line
@@ -92,18 +86,22 @@ def respond(sock):
     parts = request.split()
     if len(parts) > 1 and parts[0] == "GET":
         if parts[1] == '/':
+            # if only server name, transmit cat
             transmit(STATUS_OK, sock)
             transmit(CAT, sock)
         elif '//' in parts[1] or '..' in parts[1] or '~' in parts[1]:
+            # transmit 403 forbidden error if ~, // or .. in request
             log.info("403 Forbidden: {}".format(request))
             transmit(STATUS_FORBIDDEN, sock)
             transmit("<h1>403 Forbidden</h1>\n", sock)
         else:
             try:
+                # try to open file in DOCROOT
                 with open(str(get_options().DOCROOT.strip() + parts[1].strip()), "r") as html:
                     transmit(STATUS_OK, sock)
                     transmit(html.read(), sock)
             except IOError:
+                # else file does not exist in DOCROOT; 404 error
                 log.info("Not Found: {}".format(request))
                 transmit(STATUS_NOT_FOUND, sock)
                 transmit("<h1>404 Not Found</h1>\n", sock)
